@@ -37,6 +37,11 @@ def add_macd(df):
     return df
 
 
+def add_intraday_range(df):
+    df["Intraday_Range"] = df["High"] - df["Low"]
+    return df
+
+
 def engineer_features(df, macro_df=None):
     df = df.copy()
     df = add_moving_averages(df)
@@ -44,6 +49,7 @@ def engineer_features(df, macro_df=None):
     df = add_volume_delta(df)
     df = add_rsi(df)
     df = add_macd(df)
+    df = add_intraday_range(df)
 
     if macro_df is not None:
         df = df.join(macro_df, how="left")

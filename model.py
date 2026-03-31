@@ -1,3 +1,5 @@
+import tensorflow as tf
+import random
 import joblib
 from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.layers import LSTM, Dense, Dropout
@@ -9,12 +11,15 @@ import os
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
+random.seed(42)
+np.random.seed(42)
+tf.random.set_seed(42)
 
 SEQUENCE_LENGTH = 60
 FEATURES = [
     "Close", "High", "Low", "Open", "Volume",
     "MA20", "MA50", "Daily_Return", "Volume_Delta",
-    "RSI", "MACD", "MACD_Signal",
+    "RSI", "MACD", "MACD_Signal", "Intraday_Range",
     "^VIX", "^TNX", "GLD", "^GSPC", "AUDUSD=X"
 ]
 TARGET = "Close"

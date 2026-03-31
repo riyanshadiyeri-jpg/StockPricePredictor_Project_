@@ -141,6 +141,29 @@ training and prediction is critical.
 
 MAPE is the headline metric. A MAPE of 3% means the model's predictions were on average 3% away from the real price across all of 2025.
 
+### Chart Analysis
+
+**IVV.AX — 2.00% MAPE (Best performer)**
+The model correctly identified the upward trend from $61 to $68 across 2025. The predicted line tracks the general direction well but is smoother than reality,  the model learned the macro trend but underestimated day-to-day volatility. This is expected LSTM behaviour during a strong sustained bull run.
+
+**VAS.AX — 3.42% MAPE**
+Good trend direction captured,  the model correctly predicted a rising then stabilising pattern across 2025. The gap between predicted and actual widens in Q3/Q4 as VAS.AX experienced stronger moves than the training period suggested.
+
+**NDQ.AX — 6.89% MAPE (Weakest performer)**
+The model correctly identified the upward trend direction but consistently underestimated the magnitude of price rises. NDQ.AX tracks US tech stocks which experienced stronger than expected gains in 2025 — a pattern not well represented in the 2022-2024 training data which included the 2022 tech selloff.
+
+**VGS.AX — 4.82% MAPE**
+Similar pattern to IVV.AX — trend direction correct, magnitude underestimated. VGS.AX has a large US equity weighting which drove stronger gains than the model anticipated based on its post-COVID training window.
+
+### Key Observation Across All Four ETFs
+All four models correctly predicted the **direction** of price movement in 2025 — an upward trend across the board. The consistent gap between predicted and actual prices reflects a known limitation: the model was trained on 2022-2024 data which included significant volatility and drawdowns, so it conservatively underestimates the magnitude of a sustained bull market in 2025. This is a feature of the training window choice, not a flaw in the model architecture.
+
+### Prediction Plots
+![IVV.AX](plots/IVV.AX_prediction.png)
+![VAS.AX](plots/VAS.AX_prediction.png)
+![NDQ.AX](plots/NDQ.AX_prediction.png)
+![VGS.AX](plots/VGS.AX_prediction.png)
+
 ## Author
 Riyansh Ritesh Adiyeri
 Macquarie University — Bachelor of Commerce / Information Technology
