@@ -1,14 +1,21 @@
-from model import FEATURES, SEQUENCE_LENGTH, MODEL_DIR
-from features import engineer_features
-from data_loader import download_data, load_macro_data, TEST_START, TEST_END
-import joblib
-from tensorflow.keras.models import load_model
-import matplotlib.dates as mdates
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-import streamlit as st
 import os
+import streamlit as st
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+from tensorflow.keras.models import load_model
+import joblib
+from data_loader import download_data, load_macro_data, TEST_START, TEST_END
+from features import engineer_features
+SEQUENCE_LENGTH = 60
+MODEL_DIR = "models"
+FEATURES = [
+    "Close", "High", "Low", "Open", "Volume",
+    "MA20", "MA50", "Daily_Return", "Volume_Delta",
+    "RSI", "MACD", "MACD_Signal", "Intraday_Range",
+    "^VIX", "^TNX", "GLD", "^GSPC", "AUDUSD=X"
+]
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
