@@ -107,5 +107,20 @@ def evaluate_ticker(ticker):
 
 
 if __name__ == "__main__":
-    ticker = "IVV.AX"
-    evaluate_ticker(ticker)
+    results = {}
+
+    for ticker in ["IVV.AX", "VAS.AX", "NDQ.AX", "VGS.AX"]:
+        print(f"\n{'='*50}")
+        print(f"Evaluating {ticker}...")
+        print(f"{'='*50}")
+        mae, rmse, mape = evaluate_ticker(ticker)
+        results[ticker] = {"MAE": mae, "RMSE": rmse, "MAPE": mape}
+
+    print(f"\n{'='*50}")
+    print("PORTFOLIO SUMMARY")
+    print(f"{'='*50}")
+    print(f"{'Ticker':<10} {'MAE':>8} {'RMSE':>8} {'MAPE':>8}")
+    print("-" * 38)
+    for ticker, metrics in results.items():
+        print(
+            f"{ticker:<10} ${metrics['MAE']:>6.2f} ${metrics['RMSE']:>6.2f} {metrics['MAPE']:>6.2f}%")

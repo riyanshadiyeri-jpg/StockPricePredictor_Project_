@@ -83,24 +83,23 @@ if __name__ == "__main__":
     from data_loader import TRAIN_START, TRAIN_END
     from features import engineer_features
 
-    ticker = "IVV.AX"
-    print(f"Loading data for {ticker}...")
-    df = download_data(ticker, TRAIN_START, TRAIN_END)
-    macro = load_macro_data(TRAIN_START, TRAIN_END)
-    df = engineer_features(df, macro)
+    for ticker in ["IVV.AX", "VAS.AX", "NDQ.AX", "VGS.AX"]:
+        print(f"\n{'='*50}")
+        print(f"Training model for {ticker}...")
+        print(f"{'='*50}")
 
-    print("Preparing sequences...")
-    X, y, scaler = prepare_sequences(df)
-    X_train, X_val, y_train, y_val = split_sequences(X, y)
+        df = download_data(ticker, TRAIN_START, TRAIN_END)
+        macro = load_macro_data(TRAIN_START, TRAIN_END)
+        df = engineer_features(df, macro)
 
-    print(f"X_train shape: {X_train.shape}")
-    print(f"X_val shape: {X_val.shape}")
+        X, y, scaler = prepare_sequences(df)
+        X_train, X_val, y_train, y_val = split_sequences(X, y)
 
-    print("Building model...")
-    model = build_model((X_train.shape[1], X_train.shape[2]))
+        print(f"X_train shape: {X_train.shape}")
+        print(f"X_val shape: {X_val.shape}")
 
-    print("Training model...")
-    history = train_model(model, X_train, y_train, X_val, y_val)
+        model = build_model((X_train.shape[1], X_train.shape[2]))
+        history = train_model(model, X_train, y_train, X_val, y_val)
+        save_model(model, scaler, ticker)
 
-    save_model(model, scaler, ticker)
-    print("Done!")
+        print(f"Done — {ticker} model saved!")
