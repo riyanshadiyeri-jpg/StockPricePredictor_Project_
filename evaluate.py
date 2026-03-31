@@ -1,11 +1,13 @@
-from model import FEATURES, SEQUENCE_LENGTH, MODEL_DIR
-from data_loader import TEST_START, TEST_END
-import joblib
-from tensorflow.keras.models import load_model
-import matplotlib.pyplot as plt
-import pandas as pd
-import numpy as np
 import os
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from tensorflow.keras.models import load_model
+import joblib
+from data_loader import TEST_START, TEST_END
+from model import FEATURES, SEQUENCE_LENGTH, MODEL_DIR
+import tensorflow as tf
+tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
