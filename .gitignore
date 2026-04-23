@@ -1,0 +1,21 @@
+﻿# Data files
+data/raw/*.csv
+data/processed/*.csv
+
+# Trained models
+models/*.keras
+models/*.pkl
+
+# Plots
+plots/*.png
+
+# Keep folder structure
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!models/.gitkeep
+!plots/.gitkeep
+
+# Python
+__pycache__/
+*.pyc
+.env
