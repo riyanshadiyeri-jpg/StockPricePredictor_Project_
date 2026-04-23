@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from tensorflow.keras.models import load_model
 import joblib
 from data_loader import TEST_START, TEST_END
-from model import FEATURES, SEQUENCE_LENGTH, MODEL_DIR
+from model import FEATURES, SEQUENCE_LENGTH, MODEL_DIR, AttentionLayer
 import tensorflow as tf
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
@@ -16,7 +16,8 @@ def load_saved_model(ticker):
     model_path = f"{MODEL_DIR}/{ticker}_model.keras"
     scaler_path = f"{MODEL_DIR}/{ticker}_scaler.pkl"
 
-    model = load_model(model_path)
+    model = load_model(model_path, custom_objects={
+                       "AttentionLayer": AttentionLayer})
     scaler = joblib.load(scaler_path)
     print(f"Model and scaler loaded for {ticker}")
     return model, scaler
@@ -69,6 +70,19 @@ def calculate_metrics(actual, predicted):
     return mae, rmse, mape
 
 
+def calculate_directional_accuracy(actual, predicted):
+    actual_direction = np.diff(actual) > 0      # True if price went up
+    predicted_direction = np.diff(predicted) > 0
+
+    correct = np.sum(actual_direction == predicted_direction)
+    total = len(actual_direction)
+    accuracy = (correct / total) * 100
+
+    print(
+        f"Directional Accuracy: {accuracy:.2f}% ({correct}/{total} days correct)")
+    return accuracy
+
+
 def plot_predictions(df, predictions, actual, ticker):
     dates = df.index[SEQUENCE_LENGTH:]
 
@@ -101,11 +115,12 @@ def evaluate_ticker(ticker):
     dummy_actual[:, close_idx] = y_test
     actual = scaler.inverse_transform(dummy_actual)[:, close_idx]
 
-    print(f"\nAccuracy metrics for {ticker}:")
-    mae, rmse, mape = calculate_metrics(actual, predictions)
+   print(f"\nAccuracy metrics for {ticker}:")
+mae, rmse, mape = calculate_metrics(actual, predictions)
+dir_acc = calculate_directional_accuracy(actual, predictions)
 
     plot_predictions(df, predictions, actual, ticker)
-    return mae, rmse, mape
+    return mae, rmse, mape, dir_acc
 
 
 if __name__ == "__main__":
@@ -115,14 +130,14 @@ if __name__ == "__main__":
         print(f"\n{'='*50}")
         print(f"Evaluating {ticker}...")
         print(f"{'='*50}")
-        mae, rmse, mape = evaluate_ticker(ticker)
-        results[ticker] = {"MAE": mae, "RMSE": rmse, "MAPE": mape}
+        mae, rmse, mape, dir_acc = evaluate_ticker(ticker)
+        results[ticker] = {"MAE": mae, "RMSE": rmse, "MAPE": mape, "DireAcc": dir_acc}
 
     print(f"\n{'='*50}")
     print("PORTFOLIO SUMMARY")
     print(f"{'='*50}")
-    print(f"{'Ticker':<10} {'MAE':>8} {'RMSE':>8} {'MAPE':>8}")
-    print("-" * 38)
-    for ticker, metrics in results.items():
-        print(
-            f"{ticker:<10} ${metrics['MAE']:>6.2f} ${metrics['RMSE']:>6.2f} {metrics['MAPE']:>6.2f}%")
+    print(f"{'Ticker':<10} {'MAE':>8} {'RMSE':>8} {'MAPE':>8} {'Dir Acc':>10}")
+print("-" * 50)
+for ticker, metrics in results.items():
+    print(f"{ticker:<10} ${metrics['MAE']:>6.2f} ${metrics['RMSE']:>6.2f} {metrics['MAPE']:>6.2f}% {metrics['DirAcc']:>8.2f}%")
+    

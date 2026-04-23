@@ -2,7 +2,8 @@ import tensorflow as tf
 import random
 import joblib
 from tensorflow.keras.callbacks import EarlyStopping
-from tensorflow.keras.layers import LSTM, Dense, Dropout
+from tensorflow.keras.layers import LSTM, Dense, Dropout, Bidirectional, Layer
+import tensorflow.keras.backend as K
 from tensorflow.keras.models import Sequential
 from sklearn.preprocessing import MinMaxScaler
 import pandas as pd
@@ -46,15 +47,30 @@ def split_sequences(X, y, val_split=0.1):
     return X_train, X_val, y_train, y_val
 
 
+class AttentionLayer(Layer):
+    def build(self, input_shape):
+        self.W = self.add_weight(
+            shape=(input_shape[-1], 1), initializer="glorot_uniform", trainable=True)
+        self.b = self.add_weight(
+            shape=(input_shape[1], 1), initializer="zeros", trainable=True)
+
+    def call(self, x):
+        score = K.tanh(K.dot(x, self.W) + self.b)       # (batch, timesteps, 1)
+        weights = K.softmax(score, axis=1)                # attention weights
+        context = x * weights                             # weighted sequences
+        return K.sum(context, axis=1)                     # collapse timesteps
+
+
 def build_model(input_shape):
-    model = Sequential([
-        LSTM(128, return_sequences=True, input_shape=input_shape),
-        Dropout(0.2),
-        LSTM(64, return_sequences=False),
-        Dropout(0.2),
-        Dense(32, activation="relu"),
-        Dense(1)
-    ])
+    inputs = tf.keras.Input(shape=input_shape)
+    x = Bidirectional(LSTM(128, return_sequences=True))(inputs)
+    x = Dropout(0.2)(x)
+    x = LSTM(64, return_sequences=True)(x)   # ← return_sequences=True now
+    x = Dropout(0.2)(x)
+    x = AttentionLayer()(x)                  # ← attention collapses timesteps
+    x = Dense(32, activation="relu")(x)
+    outputs = Dense(1)(x)
+    model = tf.keras.Model(inputs, outputs)
     model.compile(optimizer="adam", loss="mean_squared_error")
     return model
 
