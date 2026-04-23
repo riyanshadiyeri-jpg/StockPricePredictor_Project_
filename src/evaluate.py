@@ -115,9 +115,9 @@ def evaluate_ticker(ticker):
     dummy_actual[:, close_idx] = y_test
     actual = scaler.inverse_transform(dummy_actual)[:, close_idx]
 
-   print(f"\nAccuracy metrics for {ticker}:")
-mae, rmse, mape = calculate_metrics(actual, predictions)
-dir_acc = calculate_directional_accuracy(actual, predictions)
+    print(f"\nAccuracy metrics for {ticker}:")
+    mae, rmse, mape = calculate_metrics(actual, predictions)
+    dir_acc = calculate_directional_accuracy(actual, predictions)
 
     plot_predictions(df, predictions, actual, ticker)
     return mae, rmse, mape, dir_acc
@@ -131,13 +131,14 @@ if __name__ == "__main__":
         print(f"Evaluating {ticker}...")
         print(f"{'='*50}")
         mae, rmse, mape, dir_acc = evaluate_ticker(ticker)
-        results[ticker] = {"MAE": mae, "RMSE": rmse, "MAPE": mape, "DireAcc": dir_acc}
+        results[ticker] = {"MAE": mae, "RMSE": rmse,
+                           "MAPE": mape, "DirAcc": dir_acc}
 
     print(f"\n{'='*50}")
     print("PORTFOLIO SUMMARY")
     print(f"{'='*50}")
     print(f"{'Ticker':<10} {'MAE':>8} {'RMSE':>8} {'MAPE':>8} {'Dir Acc':>10}")
-print("-" * 50)
-for ticker, metrics in results.items():
-    print(f"{ticker:<10} ${metrics['MAE']:>6.2f} ${metrics['RMSE']:>6.2f} {metrics['MAPE']:>6.2f}% {metrics['DirAcc']:>8.2f}%")
-    
+    print("-" * 50)
+    for ticker, metrics in results.items():
+        print(
+            f"{ticker:<10} ${metrics['MAE']:>6.2f} ${metrics['RMSE']:>6.2f} {metrics['MAPE']:>6.2f}% {metrics['DirAcc']:>8.2f}%")
